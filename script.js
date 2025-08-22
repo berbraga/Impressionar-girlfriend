@@ -1,9 +1,16 @@
 // Adiciona efeito de clique no coração
 document.querySelector('.heart').addEventListener('click', function() {
-    this.style.animation = 'heartbeat 0.5s ease-in-out';
+    // Garante que o coração permaneça visível
+    this.style.opacity = '1';
+    this.style.transform = 'scale(1) rotate(0deg)';
+    
+    // Aplica um batimento rápido
+    this.style.animation = 'heartbeat 0.5s ease-out, heartGlow 3s ease-in-out infinite alternate';
+    
+    // Restaura as animações normais após o batimento
     setTimeout(() => {
-        this.style.animation = 'heartbeat 2s ease-in-out infinite';
-    }, 10000);
+        this.style.animation = 'heartbeat 2s ease-in-out infinite, heartGlow 3s ease-in-out infinite alternate';
+    }, 500);
     
     // Cria corações extras temporários
     createExtraHeart();
@@ -121,8 +128,34 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+// Cria partículas flutuantes no fundo
+function createBackgroundParticles() {
+    const particleCount = 30;
+    const colors = ['rgba(255, 255, 255, 0.3)', 'rgba(255, 182, 193, 0.4)', 'rgba(255, 105, 180, 0.3)'];
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.borderRadius = '50%';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1';
+        particle.style.animation = `particleFloat ${10 + Math.random() * 20}s linear infinite`;
+        particle.style.animationDelay = Math.random() * 10 + 's';
+        
+        document.body.appendChild(particle);
+    }
+}
+
 // Adiciona mensagem de boas-vindas
 window.addEventListener('load', function() {
+    // Cria partículas de fundo
+    createBackgroundParticles();
+    
     setTimeout(() => {
         const welcome = document.createElement('div');
         welcome.innerHTML = '💕 Clique no coração para uma surpresa! 💕';
@@ -136,14 +169,15 @@ window.addEventListener('load', function() {
         welcome.style.textShadow = '2px 2px 4px rgba(0,0,0,0.7)';
         welcome.style.zIndex = '1001';
         welcome.style.animation = 'textGlow 2s ease-in-out infinite alternate';
+        welcome.style.opacity = '0';
+        welcome.style.animation = 'welcomeEntrance 1s ease-out forwards, textGlow 2s ease-in-out infinite alternate 1s';
         
         document.body.appendChild(welcome);
         
-        // Remove a mensagem após 5 segundos
+        // Remove a mensagem após 8 segundos
         setTimeout(() => {
-            welcome.style.opacity = '0';
-            welcome.style.transition = 'opacity 1s';
+            welcome.style.animation = 'welcomeExit 1s ease-in forwards';
             setTimeout(() => welcome.remove(), 1000);
-        }, 5000);
+        }, 8000);
     }, 1000);
 });
